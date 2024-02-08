@@ -1,29 +1,16 @@
-on:
-    push:
-        branches: [master]
+---
+- hosts: deploy
+  become: no
+  gather_facts: no
+  vars:
+    docker_registry_password: "nandini@06"
+
+  tasks:
+    - name: Login to docker registry
+      shell: echo "{{ docker_registry_password }}" | docker login -u nandini375 --password-stdin https://index.docker.io/v1/
     
+    - name: pull image from docker hub
+      shell: docker pull nandini375/dataphion:tagname
 
-jobs:
-    build:
-        runs-on: acc
-        
-        steps:
-            
-            - uses: actions/checkout@v4
-            
-            
-
-            
-            - name: Log in to Docker Hub
-              run: |
-                echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-                docker image build -t reehanruhullah/reehan:tagname .
-                docker push reehanruhullah/reehan:tagname
-                
-                
-            - name: run ansible playbook
-              if: github.ref == 'refs/heads/master'
-              env:
-                password: ${{ secrets.DOCKER_PASSWORD }}
-              run: |
-                ansible-playbook ansi.yml -i abc.txt --extra-vars "password=$password"
+    - name: docker run
+      shell: docker run --init -d nandini375/dataphion:tagname

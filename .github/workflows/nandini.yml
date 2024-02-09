@@ -8,8 +8,7 @@ jobs:
         runs-on: ash
         
         steps:
-            - run: node --version
-            - run: npm --version
+            
             - uses: actions/checkout@v4
             
             
